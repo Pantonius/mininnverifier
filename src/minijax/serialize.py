@@ -12,6 +12,8 @@ is specified in the `graph.txt` file.
 Variables are lower case, constants are upper case.
 """
 
+import ast
+import re
 from pathlib import Path
 import zipfile
 
@@ -19,6 +21,7 @@ import numpy as np
 
 from . import core as minijax_core
 from .compute_graph import ComputeGraph, Const, Equation, Var
+from .eval import Array
 
 
 def dump(graph: ComputeGraph, file: str | Path):
@@ -61,7 +64,7 @@ def _serialize_graph(graph) -> tuple[str, dict[str, Const]]:
         name = letters(i)
         if isinstance(atom, Const):
             name = name.upper()
-        return name + "[" + ", ".join(map(str, atom.shape)) + "]"
+        return name + "[" + ",".join(map(str, atom.shape)) + "]"
 
     def serialize_eqn(eqn):
         opts = "{" + ", ".join([f"{k}: {v}" for k, v in eqn.options.items()]) + "}"
@@ -83,16 +86,15 @@ def _deserialize_graph(graph_repr: str, consts: dict[str, bytes]) -> ComputeGrap
     atoms = {}
 
     def deserialize_atom(repr: str):
-        name, shape_str = repr.split("[")
-        name = name.strip()
-        shape = shape_str[:-1].split(",")
-        shape = tuple(int(s.strip()) for s in shape)
+        m = re.match(r"\s*([A-Za-z]+)\[([^\]]+)\]", repr)
+        name = m.group(1)
+        shape = tuple(int(s.strip()) for s in m.group(2).split(","))
 
         if name not in atoms:
             if name.upper() == name:  # uppercase => Const
                 val_bytes = consts[name]
                 val = np.frombuffer(val_bytes).reshape(shape)
-                atoms[name] = Const(val)
+                atoms[name] = Const(Array(val))
             else:
                 atoms[name] = Var(shape)
 
@@ -101,22 +103,25 @@ def _deserialize_graph(graph_repr: str, consts: dict[str, bytes]) -> ComputeGrap
         return atom
 
     def deserialize_eqn(repr: str):
-        outvar, expr = repr.split("=")
-        primitive, *inputs = expr.strip().split()
-        primitive, opts = primitive.split("{")
+        outvar_str, expr = repr.split("=", 1)
 
-        primitive = getattr(minijax_core, primitive)
-        opts = opts[:-1].strip().split(",")
-        opts = [opt.split(":") for opt in opts]
-        opts = {key.strip(): val.strip() for key, val in opts}
+        m = re.match(r"\s*(\w+)\{([^}]*)\}", expr)
+        primitive = getattr(minijax_core, m.group(1))
+        opts_str = m.group(2).strip()
+        if opts_str:
+            pairs = re.split(r",\s+(?=[a-z_])", opts_str)
+            opts = {k.strip(): ast.literal_eval(v.strip()) for k, v in (p.split(":", 1) for p in pairs)}
+        else:
+            opts = {}
 
-        _, outvar = deserialize_atom(outvar)
-        inputs = tuple(deserialize_atom(iv)[1] for iv in inputs)
+        outvar = deserialize_atom(outvar_str)
+        input_tokens = re.findall(r"[A-Za-z]+\[[^\]]+\]", expr[m.end():])
+        inputs = tuple(deserialize_atom(iv) for iv in input_tokens)
         return Equation(primitive, inputs, outvar, opts)
 
     invars = input_line[len("input:") :].split(",")
     invars = tuple(map(deserialize_atom, invars))
-    eqns = tuple(map(deserialize_eqn, lines))
+    eqns = tuple(map(deserialize_eqn, lines[1:-1]))
     outvars = output_line[len("output:") :].split(",")
     outvars = tuple(map(deserialize_atom, outvars))
     return ComputeGraph(invars, outvars, eqns)
