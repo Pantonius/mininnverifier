@@ -28,7 +28,7 @@ def dump(graph: ComputeGraph, file: str | Path):
         with zf.open("graph.txt", "w") as f:
             f.write(graph_str.encode("utf-8"))
 
-        consts = {name: const.value.astype(np.float64) for name, const in consts.items()}
+        consts = {name: const.value.array.astype(np.float64) for name, const in consts.items()}
         const_bytes = {name: val.tobytes("c") for name, val in consts.items()}
         for name, bytes in const_bytes.items():
             with zf.open(f"{name}.bin", "w") as f:
