@@ -911,6 +911,7 @@ version = "0.0.1"
 source = { editable = "." }
 dependencies = [
     { name = "numpy" },
+    { name = "scipy" },
 ]
 
 [package.optional-dependencies]
@@ -929,7 +930,8 @@ requires-dist = [
     { name = "matplotlib", marker = "extra == 'demos'", specifier = ">=3.0,<4.0" },
     { name = "numpy", specifier = ">=2.0,<3.0" },
     { name = "scikit-learn", marker = "extra == 'demos'", specifier = ">=1.8.0,<2.0" },
-    { name = "testrunner", marker = "extra == 'tests'", editable = "tests/runner" },
+    { name = "scipy", specifier = ">=1.0,<2.0" },
+    { name = "testrunner", marker = "extra == 'tests'", editable = "tests/testrunner" },
 ]
 provides-extras = ["demos", "tests"]
 
@@ -1551,7 +1553,7 @@ wheels = [
 [[package]]
 name = "testrunner"
 version = "0.0.1"
-source = { editable = "tests/runner" }
+source = { editable = "tests/testrunner" }
 dependencies = [
     { name = "hypothesis" },
     { name = "numpy" },
@@ -1561,6 +1563,12 @@ dependencies = [
 requires-dist = [
     { name = "hypothesis", specifier = ">=6.0,<7.0" },
     { name = "numpy", specifier = ">=2.0,<3.0" },
+]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "pytest", specifier = ">=9.0.3" },
+    { name = "pytest-cov", specifier = ">=7.1.0" },
 ]
 
 [[package]]
