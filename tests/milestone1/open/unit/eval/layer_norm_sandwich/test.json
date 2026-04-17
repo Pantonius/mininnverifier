@@ -7,5 +7,5 @@
     "expected_outputs": [
         "expected_output_0.bin"
     ],
-    "description": "conv\u2192layer_norm\u2192leaky_relu\u2192conv\u2192layer_norm\u2192elu; two-layer conv with LN between each; batch=4, length=20"
+    "description": "conv\u2192layer_norm\u2192leaky_relu\u2192conv\u2192layer_norm\u2192elu; two-layer 2-D conv with LN between each; batch=4, 8\u00d720"
 }

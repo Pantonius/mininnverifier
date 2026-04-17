@@ -7,5 +7,5 @@
     "expected_outputs": [
         "expected_output_0.bin"
     ],
-    "description": "1-D sum pooling with window_size=3, stride=1, on 24 linearly spaced values; output length=22"
+    "description": "2-D sum pooling, window=3x3, stride=1, on a 1x1x8x10 NCHW tensor; output 1x1x6x8"
 }

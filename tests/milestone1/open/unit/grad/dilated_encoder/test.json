@@ -7,5 +7,5 @@
     "expected_outputs": [
         "expected_grad_0.bin"
     ],
-    "description": "dilated encoder: conv(dil=1)+leaky_relu then conv(dil=2)+ELU followed by avg_pool(window=4,stride=4) to aggregate; batch=4, length=28\u21927"
+    "description": "2-D dilated encoder: conv(dil=1)+leaky_relu then conv(dil=2)+ELU followed by avg_pool(window=4,stride=4) to aggregate; batch=4, 12\u00d728 \u2192 3\u00d77"
 }

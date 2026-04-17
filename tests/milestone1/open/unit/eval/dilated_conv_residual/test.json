@@ -7,5 +7,5 @@
     "expected_outputs": [
         "expected_output_0.bin"
     ],
-    "description": "dilated conv (dilation=2, effective kernel=5) + ELU with residual skip connection; batch=4, length=24"
+    "description": "2-D dilated conv (dilation=2, effective kernel 5\u00d75) + ELU with residual skip connection; batch=4, 12\u00d724"
 }

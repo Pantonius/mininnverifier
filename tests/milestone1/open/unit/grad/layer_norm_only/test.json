@@ -7,5 +7,5 @@
     "expected_outputs": [
         "expected_grad_0.bin"
     ],
-    "description": "layer normalisation (gamma=1, beta=0) on a batch of 4 vectors of length 20"
+    "description": "layer normalisation over last axis (gamma=1, beta=0) on a batch of 4 feature maps 8\u00d720"
 }

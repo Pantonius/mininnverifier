@@ -7,5 +7,5 @@
     "expected_outputs": [
         "expected_grad_0.bin"
     ],
-    "description": "single-layer conv net: pad(1,1,dil=1) \u2192 conv(kernel=3,stride=1) \u2192 leaky_relu(slope=0.1); batch=4, length=20, output same length"
+    "description": "single-layer 2-D conv net: conv(same-pad, 3x3, stride=1) \u2192 leaky_relu(slope=0.1); batch=4, spatial 8x10, output preserved"
 }

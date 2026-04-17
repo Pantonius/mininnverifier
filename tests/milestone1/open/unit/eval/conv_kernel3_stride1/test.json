@@ -7,5 +7,5 @@
     "expected_outputs": [
         "expected_output_0.bin"
     ],
-    "description": "1-D cross-correlation with smoothing kernel [0.25, 0.5, 0.25], stride=1, on 30 linearly spaced values"
+    "description": "NCHW\u00d7OIHW 2-D conv with 3x3 Gaussian-like kernel, stride=1; input (N=2,C=1,H=8,W=10); output (2,1,6,8)"
 }

@@ -7,5 +7,5 @@
     "expected_outputs": [
         "expected_grad_0.bin"
     ],
-    "description": "1-D sum pooling with window_size=5, stride=2, on a batch of 4 length-30 sequences; output length=(30-5)//2+1=13"
+    "description": "2-D sum pooling, window=5x5, stride=2, on a 4x2x12x12 NCHW tensor; output 4x2x4x4"
 }

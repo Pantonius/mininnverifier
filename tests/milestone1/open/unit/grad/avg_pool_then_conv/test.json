@@ -7,5 +7,5 @@
     "expected_outputs": [
         "expected_grad_0.bin"
     ],
-    "description": "avg_pool(window=3,stride=1) feeding into conv(same-pad,kernel=3)+ELU; tests sumpool output as conv input; batch=4, length=24\u219222"
+    "description": "2-D avg_pool(window=3,stride=1) feeding into conv_same(kernel=3\u00d73)+ELU; tests sumpool output as conv input; batch=4, 8\u00d710 \u2192 6\u00d78"
 }

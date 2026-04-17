@@ -7,5 +7,5 @@
     "expected_outputs": [
         "expected_output_0.bin"
     ],
-    "description": "single dilated convolution: 3-tap kernel pre-dilated to effective length 5 (dilation=2) via pad(0,0,dil=2); same-padding preserves length; followed by leaky_relu; batch=4, length=24"
+    "description": "single 2-D dilated convolution: 3\u00d73 kernel pre-dilated to effective 5\u00d75 (dilation=2) via pad(0,0,dil=2) on both axes; same-padding preserves shape; followed by leaky_relu; batch=4, 12\u00d724"
 }

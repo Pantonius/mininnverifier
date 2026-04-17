@@ -7,5 +7,5 @@
     "expected_outputs": [
         "expected_grad_0.bin"
     ],
-    "description": "multi-scale feature fusion: full-res branch (conv+leaky_relu) and half-res branch (avg_pool+conv+ELU) merged at half resolution via addition; batch=4, length=24\u219212"
+    "description": "2-D multi-scale feature fusion: full-res branch (conv+leaky_relu) and half-res branch (avg_pool(2,2)+conv+ELU) merged at half resolution via addition; batch=4, 12\u00d724 \u2192 6\u00d712"
 }

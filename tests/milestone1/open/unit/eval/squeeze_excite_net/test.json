@@ -7,5 +7,5 @@
     "expected_outputs": [
         "expected_output_0.bin"
     ],
-    "description": "squeeze-and-excitation: local conv+leaky_relu branch recalibrated by a global avg-pool gate (elu(global_avg)+1); batch=4, length=20"
+    "description": "squeeze-and-excitation: local 2-D conv+leaky_relu branch recalibrated by a per-row avg-pool gate (elu(row_mean)+1); batch=4, 8\u00d720"
 }
