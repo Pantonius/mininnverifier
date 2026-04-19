@@ -7,5 +7,6 @@
     "expected_outputs": [
         "expected_grad_0.bin"
     ],
-    "description": "two stacked pre-norm single-head transformer blocks; each block has independent Q/K/V/O/FFN weights; seq=6, d_model=8, d_head=4, d_ff=16"
+    "description": "two stacked pre-norm single-head transformer blocks; each block has independent Q/K/V/O/FFN weights; seq=6, d_model=8, d_head=4, d_ff=16",
+    "points": 3
 }

@@ -9,5 +9,6 @@
         "reduce_sum"
     ],
     "check_nan_inf": false,
-    "description": "targeted fuzz for shape-manipulating primitives (expand_dims/moveaxis/reshape/reduce_sum) to catch shape-propagation bugs"
+    "description": "targeted fuzz for shape-manipulating primitives (expand_dims/moveaxis/reshape/reduce_sum) to catch shape-propagation bugs",
+    "points": 6
 }

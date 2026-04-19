@@ -7,5 +7,6 @@
     "expected_outputs": [
         "expected_output_0.bin"
     ],
-    "description": "2-D avg_pool(window=3,stride=1) feeding into conv_same(kernel=3\u00d73)+ELU; tests sumpool output as conv input; batch=4, 8\u00d710 \u2192 6\u00d78"
+    "description": "2-D avg_pool(window=3,stride=1) feeding into conv_same(kernel=3\u00d73)+ELU; tests avgpool output as conv input; batch=4, 8\u00d710 \u2192 6\u00d78",
+    "points": 3
 }

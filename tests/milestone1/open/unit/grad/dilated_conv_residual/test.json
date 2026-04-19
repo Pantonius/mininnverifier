@@ -7,5 +7,6 @@
     "expected_outputs": [
         "expected_grad_0.bin"
     ],
-    "description": "2-D dilated conv (dilation=2, effective kernel 5\u00d75) + ELU with residual skip connection; batch=4, 12\u00d724"
+    "description": "2-D dilated conv (dilation=2, effective kernel 5\u00d75) + ELU with residual skip connection; batch=4, 12\u00d724",
+    "points": 2
 }

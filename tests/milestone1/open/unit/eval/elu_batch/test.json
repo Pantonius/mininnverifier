@@ -7,5 +7,6 @@
     "expected_outputs": [
         "expected_output_0.bin"
     ],
-    "description": "ELU activation on a batch of 4 vectors of length 20, values in [-2, 2]"
+    "description": "ELU activation on a batch of 4 vectors of length 20, values in [-2, 2]",
+    "points": 1
 }

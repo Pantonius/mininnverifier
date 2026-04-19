@@ -2,6 +2,22 @@
   "command": "fuzz_eval",
   "n_trials": 400,
   "seed": 0,
-  "primitives": "all",
+  "primitives": [
+    "neg",
+    "reciprocal",
+    "relu",
+    "square",
+    "sqrt",
+    "exp",
+    "log",
+    "add",
+    "mul",
+    "dot",
+    "where",
+    "expand_dims",
+    "moveaxis",
+    "reshape",
+    "reduce_sum"
+  ],
   "check_nan_inf": false
 }

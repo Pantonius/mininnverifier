@@ -3,5 +3,6 @@
     "dataset": "mnist_mlp",
     "in_size": 784,
     "num_classes": 10,
+    "timeout": 3600,
     "source_dataset": "mnist"
 }

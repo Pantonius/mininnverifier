@@ -11,5 +11,6 @@
         "neg"
     ],
     "check_nan_inf": true,
-    "description": "backward-pass numerics fuzz over curated finite-gradient subset (relu/square/dot/add/mul/neg); fails on NaN/Inf in gradients"
+    "description": "backward-pass numerics fuzz over curated finite-gradient subset (relu/square/dot/add/mul/neg); fails on NaN/Inf in gradients",
+    "points": 6
 }

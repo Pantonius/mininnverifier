@@ -7,5 +7,6 @@
     "expected_outputs": [
         "expected_grad_0.bin"
     ],
-    "description": "GELU activation on a batch of 6 vectors of length 16, values in [-2, 2]"
+    "description": "GELU activation on a batch of 6 vectors of length 16, values in [-2, 2]",
+    "points": 1
 }

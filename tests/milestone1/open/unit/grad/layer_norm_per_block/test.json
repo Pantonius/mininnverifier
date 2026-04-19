@@ -7,5 +7,6 @@
     "expected_outputs": [
         "expected_grad_0.bin"
     ],
-    "description": "pre-norm 2-D architecture: layer_norm\u2192conv_same(3\u00d73)\u2192activation applied 3 times; activations leaky_relu/ELU/GELU; batch=4, 8\u00d720"
+    "description": "pre-norm 2-D architecture: layer_norm\u2192conv_same(3\u00d73)\u2192activation applied 3 times; activations leaky_relu/ELU/GELU; batch=4, 8\u00d720",
+    "points": 3
 }

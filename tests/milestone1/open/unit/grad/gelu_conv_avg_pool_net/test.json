@@ -7,5 +7,6 @@
     "expected_outputs": [
         "expected_grad_0.bin"
     ],
-    "description": "conv(same-pad, 3x3) \u2192 GELU \u2192 avg_pool(4x4, stride=2); batch=4, spatial 8x8, output 3x3"
+    "description": "conv(same-pad, 3x3) \u2192 GELU \u2192 avg_pool(4x4, stride=2); batch=4, spatial 8x8, output 3x3",
+    "points": 3
 }

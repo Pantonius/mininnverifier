@@ -7,5 +7,6 @@
     "expected_outputs": [
         "expected_output_0.bin"
     ],
-    "description": "layer normalisation over last axis (gamma=1, beta=0) on a batch of 4 feature maps 8\u00d720"
+    "description": "layer normalisation over last axis (gamma=1, beta=0) on a batch of 4 feature maps 8\u00d720",
+    "points": 1
 }

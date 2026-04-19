@@ -8,5 +8,6 @@
         "mul"
     ],
     "check_nan_inf": false,
-    "description": "targeted gradient fuzz for dot/add/mul; exercises broadcasting backward rules"
+    "description": "targeted gradient fuzz for dot/add/mul; exercises broadcasting backward rules",
+    "points": 6
 }

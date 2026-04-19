@@ -11,5 +11,6 @@
         "mul"
     ],
     "check_nan_inf": false,
-    "description": "targeted crash-only fuzz for numerically unsafe unaries (log/sqrt/reciprocal/exp) \u2014 NaN/Inf outputs permitted, only shape/crash failures detected"
+    "description": "targeted crash-only fuzz for numerically unsafe unaries (log/sqrt/reciprocal/exp) \u2014 NaN/Inf outputs permitted, only shape/crash failures detected",
+    "points": 6
 }

@@ -7,5 +7,6 @@
     "expected_outputs": [
         "expected_output_0.bin"
     ],
-    "description": "ELU activation on 100 linearly spaced values in [-4, 4]"
+    "description": "ELU activation on 100 linearly spaced values in [-4, 4]",
+    "points": 1
 }

@@ -9,5 +9,6 @@
         "reduce_sum"
     ],
     "check_nan_inf": false,
-    "description": "targeted gradient fuzz for shape-manipulating primitives to verify transposed shape-propagation in the backward pass"
+    "description": "targeted gradient fuzz for shape-manipulating primitives to verify transposed shape-propagation in the backward pass",
+    "points": 6
 }

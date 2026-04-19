@@ -7,5 +7,6 @@
     "expected_outputs": [
         "expected_grad_0.bin"
     ],
-    "description": "asymmetric padding (2 left, 1 right) with dilation=2 on a length-10 sequence; dilation inserts zeros between each element before padding"
+    "description": "asymmetric padding (2 left, 1 right) with one zero inserted between elements on the last two (spatial) axes; NCHW input 2x1x3x4 -> 2x1x8x10",
+    "points": 1
 }

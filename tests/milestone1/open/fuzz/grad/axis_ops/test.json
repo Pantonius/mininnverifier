@@ -5,10 +5,11 @@
     "primitives": [
         "pad",
         "conv",
-        "sumpool",
+        "avgpool",
         "add",
         "mul"
     ],
     "check_nan_inf": false,
-    "description": "targeted gradient fuzz for last-axis ops (pad/conv/sumpool); exercises strided/dilated backward accumulation"
+    "description": "targeted gradient fuzz for last-axis ops (pad/conv/avgpool); exercises strided/dilated backward accumulation",
+    "points": 6
 }

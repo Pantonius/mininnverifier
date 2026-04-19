@@ -7,5 +7,6 @@
     "expected_outputs": [
         "expected_output_0.bin"
     ],
-    "description": "symmetric 1-element zero-padding, dilation=1 (no dilation), on a length-20 sequence"
+    "description": "symmetric 1-element zero-padding, no dilation, on the last two (spatial) axes; NCHW input 2x1x4x5 -> 2x1x6x7",
+    "points": 1
 }

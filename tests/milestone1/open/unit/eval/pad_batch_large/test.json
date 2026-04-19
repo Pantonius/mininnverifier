@@ -7,5 +7,6 @@
     "expected_outputs": [
         "expected_output_0.bin"
     ],
-    "description": "symmetric 3-element zero-padding, no dilation, applied to a batch of 4 length-30 sequences"
+    "description": "symmetric 3-element zero-padding, no dilation, on the last two (spatial) axes; batch of 4 single-channel 5x6 images -> 4x1x11x12",
+    "points": 1
 }

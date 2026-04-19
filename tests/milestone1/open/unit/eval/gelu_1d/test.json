@@ -7,5 +7,6 @@
     "expected_outputs": [
         "expected_output_0.bin"
     ],
-    "description": "GELU activation on 100 linearly spaced values in [-3, 3]"
+    "description": "GELU activation on 100 linearly spaced values in [-3, 3]",
+    "points": 1
 }
