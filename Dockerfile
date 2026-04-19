@@ -9,8 +9,8 @@ COPY src/ ./src/
 
 RUN uv sync --frozen --no-dev
 
-COPY src/interface/ ./interface/
+COPY src/cli/ ./cli/
 
 ENV PATH="/app/.venv/bin:$PATH"
 
-ENTRYPOINT ["python", "-m", "interface"]
+ENTRYPOINT ["python", "-m", "cli"]
