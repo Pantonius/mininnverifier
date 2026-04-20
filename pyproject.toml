@@ -19,6 +19,9 @@ tests = ["testrunner"]
 requires = ["uv_build>=0.9.18,<0.12.0"]
 build-backend = "uv_build"
 
+[tool.uv.build-backend]
+module-root = "tutorial"
+
 [tool.uv.sources]
 testrunner = { path = "tests/testrunner", editable = true }
 
