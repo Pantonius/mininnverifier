@@ -15,19 +15,25 @@ class Primitive:
 neg = Primitive("neg", 1)
 add = Primitive("add", 2)
 mul = Primitive("mul", 2)
+matmul = Primitive("matmul", 2)
 relu = Primitive("relu", 1)
 
 
-top_interpreter = None
+interpreter_stack = []
 
 
-def set_interpreter(interpreter):
-    global top_interpreter
-    top_interpreter = interpreter
+def push_interpreter(interpreter):
+    global interpreter_stack
+    interpreter_stack.append(interpreter)
+
+
+def pop_interpreter():
+    global interpreter_stack
+    interpreter_stack.pop(-1)
 
 
 def bind(primitive, *args, **options):
-    return top_interpreter.process_primitive(primitive, *args, **options)
+    return interpreter_stack[-1].process_primitive(primitive, *args, **options)
 
 
 class InterpreterABC(ABC):
@@ -36,5 +42,15 @@ class InterpreterABC(ABC):
 
 
 class ValueABC(ABC):
+    @property
+    def shape(self):
+        raise NotImplementedError
+
+    def __add__(self, other):
+        return add(self, other)
+
     def __mul__(self, other):
         return mul(self, other)
+
+    def __matmul__(self, other):
+        return matmul(self, other)

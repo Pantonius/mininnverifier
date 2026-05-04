@@ -1,7 +1,7 @@
 import itertools
 from dataclasses import dataclass
 
-from .core import InterpreterABC, ValueABC, Primitive, set_interpreter
+from .core import InterpreterABC, ValueABC, Primitive, push_interpreter
 
 
 @dataclass(frozen=True)
@@ -57,11 +57,12 @@ class MakeCG(InterpreterABC):
 @dataclass
 class AbstractValue(ValueABC):
     var: Var
+    shape: tuple[int, ...]
 
 
 def make_compute_graph(fn, *args) -> ComputeGraph:
     interpreter = MakeCG()
-    set_interpreter(interpreter)
+    push_interpreter(interpreter)
     invars = [Var() for _ in args]
     invals = [AbstractValue(v) for v in invars]
 
