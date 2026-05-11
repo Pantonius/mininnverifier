@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 import numpy as np
 
-from .core import InterpreterABC, ValueABC, neg, add, mul, matmul, relu
+from .core import InterpreterABC, ValueABC, neg, add, mul, matmul, relu, transpose
 
 
 class EvalInterpreter(InterpreterABC):
@@ -29,5 +29,6 @@ eval_rules = {
     mul: lambda x, y: x * y,
     matmul: lambda x, y: x @ y,
     relu: lambda x: np.maximum(0.0, x),
+    transpose: lambda x: np.transpose(x)
 }
 

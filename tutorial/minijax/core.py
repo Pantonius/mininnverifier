@@ -6,9 +6,11 @@ from dataclasses import dataclass
 class Primitive:
     name: str
     nargs: int
+    options: tuple[str, ...] = ()
 
     def __call__(self, *args, **options):
         assert len(args) == self.nargs
+        assert set(self.options) == set(options.keys())
         return bind(self, *args, **options)
 
 
@@ -17,6 +19,8 @@ add = Primitive("add", 2)
 mul = Primitive("mul", 2)
 matmul = Primitive("matmul", 2)
 relu = Primitive("relu", 1)
+transpose = Primitive("transpose", 1)
+# moveaxis = Primitive("moveaxis", 1, ("start", "target"))
 
 
 interpreter_stack = []
