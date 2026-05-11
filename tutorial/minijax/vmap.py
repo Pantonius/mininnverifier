@@ -11,20 +11,21 @@ class VMapInterpreter(InterpreterABC):
             a if isinstance(a, VmappedArray) else VmappedArray(None, a) 
             for a in args
         ]
+        batch_axes = [a.batch_axis for a in args if a.batch_axis is not None]
 
-        # pop self from interpreter stack
         try:
             pop_interpreter()
             if primitive not in vmap_rules:
                 args = [transpose_to_zero(a) for a in args]
                 res = primitive(*args, **options)
-                out_batch_axis = args[0].batch_axis
+                out_batch_axis = batch_axes[0] if len(batch_axes) > 0 else None
                 return transpose_zero_to(res, out_batch_axis)
             else:
                 rule = vmap_rules[primitive]
-                result = rule(*args, **options)
+                return rule(*args, **options)
         finally:
             push_interpreter(self)
+
 
 
 @dataclass
@@ -34,7 +35,6 @@ class VmappedArray(ValueABC):
 
     @property
     def shape(self):
-        # TODO: drop batch axis?
         return self.value.shape
 
 
@@ -58,23 +58,23 @@ def vmap_matmul(x: VmappedArray, y: VmappedArray) -> VmappedArray:
     assert x.batch_axis is None or y.batch_axis is None
 
     if x.batch_axis == 0:
-        z = matmul(x, y)
+        z = matmul(x.value, y.value)
         return VmappedArray(0, z)
     elif y.batch_axis == 1:
-        z = matmul(x, y)
+        z = matmul(x.value, y.value)
         return VmappedArray(1, z)
     elif x.batch_axis == 1:
-        x_ = transpose(x)
-        z_ = matmul(x_, y)
+        x_ = transpose(x.value)
+        z_ = matmul(x_, y.value)
         z = transpose(z_)
         return VmappedArray(1, z)
     elif y.batch_axis == 0:
-        y_ = transpose(y)
-        z_ = matmul(x, y_)
+        y_ = transpose(y.value)
+        z_ = matmul(x.value, y_)
         z = transpose(z_)
         return VmappedArray(0, z)
     else:
-        z = matmul(x, y)
+        z = matmul(x.value, y.value)
         return VmappedArray(None, z)
         
 

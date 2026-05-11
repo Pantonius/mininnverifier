@@ -12,9 +12,9 @@ m = 2
 def nn(x):
     w = (np.arange(m * n) - 3.0).reshape((m, n))
     print(f"{w=}")
-    y = matmul(Array(w), x)
-    print(f"{y=}")
-    return relu(y) 
+    z = matmul(Array(w), x)
+    print(f"{z=}")
+    return relu(z) 
 
 def nn2(x, y):
     z = y + x
@@ -24,11 +24,10 @@ def nn3(x):
     z = x + x
     return relu(z) 
 
-print("\n" * 5)
+print("-" * 100)
 
 push_interpreter(EvalInterpreter())
 push_interpreter(VMapInterpreter())
-# push_interpreter(DirectIntervalEvalInterpreter())
 
 x = np.array([
     [0.0, 0.0, -5.0],
@@ -40,14 +39,27 @@ print(f"{x=}")
 y = nn(x)
 print(f"{y=}")
 
-# x_lb = np.array([1.0, 0.0, -1.0])
-# x_ub = np.array([2.0, 1.0, 1.0])
+
+# push_interpreter(EvalInterpreter())
+# push_interpreter(VMapInterpreter())
+# push_interpreter(DirectIntervalEvalInterpreter())
+# 
+# x_lb = np.array([
+#     [1.0, 0.0, -1.0],
+#     [-1.0, -1.0, -10.0],
+# ])
+# x_ub = np.array([
+#     [2.0, 1.0, 1.0],
+#     [0.0, 0.0, 0.0]
+# ])
+# x_lb, x_ub = Array(x_lb), Array(x_ub)
+# x_lb, x_ub = VmappedArray(0, x_lb), VmappedArray(0, x_ub)
 # print(f"{x_lb=}")
 # print(f"{x_ub=}")
-# y = nn3(Box(Array(x_lb), Array(x_ub)))
+# y = nn3(Box(x_lb, x_ub))
 # print(f"{y=}")
 
 # cg = make_compute_graph(nn2, Array(2.0), Array(10.0))
 # print(cg)
 
-print("\n" * 5)
+print("-" * 100)

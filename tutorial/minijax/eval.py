@@ -7,7 +7,6 @@ from .core import InterpreterABC, ValueABC, neg, add, mul, matmul, relu, transpo
 
 class EvalInterpreter(InterpreterABC):
     def process_primitive(self, primitive, *args, **options):
-        print(primitive, args, options)
         args = [a.value for a in args]
         rule = eval_rules[primitive]
         res = rule(*args, **options)
