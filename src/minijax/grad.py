@@ -121,6 +121,35 @@ def vjp_pad(tangent, _, x, config: tuple[int, int, int], axes: tuple[int, ...], 
 
     return Array(g)
 
+def vjp_conv(t, _, inp, kernel, stride):
+    N, Cin, H, W = inp.shape
+    Cout, _, kH, kW = kernel.shape
+    _, _, Hp, Wp = t.shape
+
+    # The jacobian consists of two parts -- gradient w.r.t. the kernel and gradient w.r.t. the input matrix
+    # Because convolution is a sum of products, each gradient is going to look like a sum of gradients
+
+    # wrt kernel: (rough sketch)
+    # (x[n, c', stride * h + i, stride * w + j] * K[c, c', i, j])' = x[n, c', stride * h + i, stride * w + j] => t * (sum over these x) => sum over t * these x
+    print(t.array[0, :, 0, 0][:, np.newaxis, np.newaxis, np.newaxis])
+    dk = np.zeros_like(kernel)
+    for n in range(N):
+        for h in range(Hp):
+            for w in range(Wp):
+                patch = inp.array[n, :, stride * h : stride * h + kH, stride * w : stride * w + kW]
+                dk += t.array[n, :, h, w][:, np.newaxis, np.newaxis, np.newaxis] * patch[np.newaxis, :, :, :]
+
+    # wrt input: (rough sketch)
+    # (x[n, c', stride * h + i, stride * w + j] * K[c, c', i, j])' = K[c, c', i, j] => t * (sum over these K) => sum over t * these K
+    dx = np.zeros_like(inp)
+    for n in range(N):
+        for h in range(Hp):
+            for w in range(Wp):
+                # t[n, :, h, w] has shape (Cout,), kernel has shape (Cout, Cin, kH, kW)
+                dx[n, :, stride * h : stride * h + kH, stride * w : stride * w + kW] += (t.array[n, :, h, w][:, np.newaxis, np.newaxis, np.newaxis] * kernel).sum(axis=0)
+
+    return (dx, dk)
+
 vjp_rules = {
     core.expand_dims: lambda t, _, x, axes: core.reduce_sum(t, axes),
     core.moveaxis: lambda t, _, __, source, destination: core.moveaxis(t, destination, source),
@@ -142,4 +171,5 @@ vjp_rules = {
     core.exp: lambda t, out, x: t * out,
     core.log: lambda t, _, x: t / x,
     core.where: vjp_where,
+    core.conv: vjp_conv,
 }

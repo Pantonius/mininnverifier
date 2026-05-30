@@ -104,6 +104,29 @@ def pad(x, config: tuple[int, int, int], axes: tuple[int, ...], value: float):
         
     return y
 
+def conv(inp, kernel, stride):
+    N, Cin, H, W = inp.shape
+    Cout, _, kH, kW = kernel.shape
+
+    Hp = int(np.floor((H - kH) / stride)) + 1
+    Wp = int(np.floor((W - kW) / stride)) + 1
+
+    y = np.zeros((N, Cout, Hp, Wp), dtype=inp.dtype)
+
+    for n in range(N):
+        for h in range(Hp):
+            for w in range(Wp):
+                # current n, every channel, region of [stride * h : stride * h + kH] and [stride * w : stride * w + kW]
+                # yielding a patch of shape (Cin, kH, kW)
+                patch = inp[n, :, stride * h : stride * h + kH, stride * w : stride * w + kW]
+                
+                # apply the kernel to that patch (just a dot product) and sum the (Cin, kH, kW)
+                # because kernel shape is (Cout, Cin, kH, kW), the patch is expanded by another empty axis upfront as to ignore the Cout field
+                y[n, :, h, w] = (kernel * patch[np.newaxis, :, :, :]).sum(axis=(1, 2, 3))
+
+    return y
+
+
 eval_rules = {
     core.expand_dims: lambda x, axes: np.expand_dims(x, axes),
     core.moveaxis: np.moveaxis,
@@ -125,4 +148,5 @@ eval_rules = {
     core.exp: np.exp,
     core.log: np.log,
     core.where: np.where,
+    core.conv: conv,
 }
