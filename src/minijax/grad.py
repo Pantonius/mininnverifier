@@ -132,7 +132,7 @@ def vjp_conv(t, _, inp, kernel, stride):
     # wrt kernel: (rough sketch)
     # (x[n, c', stride * h + i, stride * w + j] * K[c, c', i, j])' = x[n, c', stride * h + i, stride * w + j] => t * (sum over these x) => sum over t * these x
     print(t.array[0, :, 0, 0][:, np.newaxis, np.newaxis, np.newaxis])
-    dk = np.zeros_like(kernel)
+    dk = np.zeros(kernel.shape)
     for n in range(N):
         for h in range(Hp):
             for w in range(Wp):
@@ -141,14 +141,35 @@ def vjp_conv(t, _, inp, kernel, stride):
 
     # wrt input: (rough sketch)
     # (x[n, c', stride * h + i, stride * w + j] * K[c, c', i, j])' = K[c, c', i, j] => t * (sum over these K) => sum over t * these K
-    dx = np.zeros_like(inp)
+    dx = np.zeros(inp.shape)
     for n in range(N):
         for h in range(Hp):
             for w in range(Wp):
                 # t[n, :, h, w] has shape (Cout,), kernel has shape (Cout, Cin, kH, kW)
-                dx[n, :, stride * h : stride * h + kH, stride * w : stride * w + kW] += (t.array[n, :, h, w][:, np.newaxis, np.newaxis, np.newaxis] * kernel).sum(axis=0)
+                dx[n, :, stride * h : stride * h + kH, stride * w : stride * w + kW] += (t.array[n, :, h, w][:, np.newaxis, np.newaxis, np.newaxis] * kernel.array).sum(axis=0)
 
-    return (dx, dk)
+    return (Array(dx), Array(dk))
+
+def vjp_avgpool(t, _, x, window_size, stride):
+    # once again a kind of sum of products
+
+    # rough derivative
+    # y[out_idx] = sum(patch) / prod(window_size)
+    # d(y[out_idx])/dx = 1 / prod(window_size)
+
+    dx = np.zeros(x.shape)
+    new_shape = t.shape
+    pw = int(np.prod(window_size))
+
+    # for each position in the output
+    for out_idx in np.ndindex(new_shape):
+        # get the original slice of the input space
+        slices = tuple(slice(out_idx[axis] * stride[axis], out_idx[axis] * stride[axis] + window_size[axis]) for axis in range(x.ndim))
+
+        # add t * its derivative (i.e. 1 / prod(window_size))
+        dx[slices] += t.array[out_idx] / pw
+
+    return Array(dx)
 
 vjp_rules = {
     core.expand_dims: lambda t, _, x, axes: core.reduce_sum(t, axes),
@@ -172,4 +193,5 @@ vjp_rules = {
     core.log: lambda t, _, x: t / x,
     core.where: vjp_where,
     core.conv: vjp_conv,
+    core.avgpool: vjp_avgpool
 }
