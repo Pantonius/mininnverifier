@@ -126,6 +126,20 @@ def conv(inp, kernel, stride):
 
     return y
 
+def avgpool(x, window_size, stride):
+    new_shape = tuple([int(np.floor((x.shape[i] - window_size[i]) / stride[i])) + 1 for i in range(x.ndim)])
+    y = np.zeros(new_shape, dtype=x.dtype)
+
+    # iterate over all positions in the new_shape
+    for out_idx in np.ndindex(new_shape):
+        # get the slice in the input:
+        # for each axis get the interval in the input: [output position * stride, output position * stride + window size]
+        slices = tuple(slice(out_idx[axis] * stride[axis], out_idx[axis] * stride[axis] + window_size[axis]) for axis in range (y.ndim))
+
+        # compute the mean of that slice and put it into the output
+        y[out_idx] = x[slices].mean()
+    
+    return y
 
 eval_rules = {
     core.expand_dims: lambda x, axes: np.expand_dims(x, axes),
@@ -149,4 +163,5 @@ eval_rules = {
     core.log: np.log,
     core.where: np.where,
     core.conv: conv,
+    core.avgpool: avgpool,
 }
