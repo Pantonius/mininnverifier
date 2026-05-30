@@ -102,11 +102,30 @@ def vjp_where(tangent, out, cond, true_val, false_val):
     zero = zeros(cond.shape)
     return (zero, core.where(cond, tangent, zero), core.where(cond, zero, tangent))
 
+def vjp_pad(tangent, _, x, config: tuple[int, int, int], axes: tuple[int, ...], value: float):
+    l, r, m = config
+    actual_axes = tuple([axis if axis >= 0 else len(x.shape) + axis for axis in axes])
+
+    g = tangent.array
+    for axis in actual_axes:
+        # strip left and right padding
+        slices = [slice(None)] * g.ndim # once again take all axes
+        slices[axis] = slice(l, g.shape[axis] - r) # reduce current axis to just [l, -r]
+        g = g[tuple(slices)] # apply that selection
+
+        # and remove interior padding, if neccessary
+        if m > 0:
+            slices = [slice(None)] * g.ndim
+            slices[axis] = slice(0, None, m + 1) # reduce current axis by only keeping each (m + 1)th position (starting at 0)
+            g = g[tuple(slices)]
+
+    return Array(g)
 
 vjp_rules = {
     core.expand_dims: lambda t, _, x, axes: core.reduce_sum(t, axes),
     core.moveaxis: lambda t, _, __, source, destination: core.moveaxis(t, destination, source),
     core.reshape: lambda t, _, x, new_shape: core.reshape(t, x.shape),
+    core.pad: vjp_pad,
     core.neg: lambda t, *_: -t,
     core.add: lambda t, *_: (t, t),
     core.reduce_sum: lambda t, _, x, axes: broadcast_to(core.expand_dims(t, axes), x),
@@ -114,7 +133,7 @@ vjp_rules = {
     core.mul: lambda t, _, x, y: (t * y, x * t),
     core.reciprocal: lambda t, _, x: -core.reciprocal(core.square(x)) * t,
     core.relu: lambda t, out, x: core.where(out, t, Array(0)),  # np.bool_(0) = False
-    core.leaky_relu: lambda t, _, x, *, slope: core.where(core.relu(x), t, t * Array(slope)),
+    core.leaky_relu: lambda t, _, x, slope: core.where(core.relu(x), t, t * Array(slope)),
     core.elu: lambda t, _, x, a: core.where(x, t, t * Array(a) * core.exp(x)),
     core.gelu: lambda t, _, x: t * core.normalcdf(x) + (core.exp(core.neg(core.square(x)) / Array(2)) * x) / (np.sqrt(Array(2 * np.pi))),
     core.normalcdf: lambda t, _, x: (core.exp(core.neg(core.square(x)) / Array(2)) * x) / (core.sqrt(Array(2 * np.pi))),

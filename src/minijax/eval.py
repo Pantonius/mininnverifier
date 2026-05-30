@@ -53,11 +53,62 @@ def np_dot(x, y):  # np.dot doesn't broadcast
         return np.dot(x, y)
     return np.einsum("...j,...jk", x, y)
 
+def pad(x, config: tuple[int, int, int], axes: tuple[int, ...], value: float):
+    l, r, m = config
+    actual_axes = tuple([axis if axis >= 0 else len(x.shape) + axis for axis in axes])
+
+    # start out with a copy of x
+    y = x
+    # ... then iterate over the axes to be padded and actually give them the padding
+
+    # outer padding (left and right) we will do with numpy, by recoding for each axis
+    # the left and right padding to be added
+    pad_width = [(0, 0)] * y.ndim # by default no padding
+
+    for axis in actual_axes:
+        pad_width[axis] = (l, r) # for current axis we add left padding l and right padding r
+
+        # and interior padding, if neccessary
+        if m > 0:
+            old_size = y.shape[axis]
+            new_size = old_size + (old_size - 1) * m
+            
+            # build a new interior (start out with current y.shape)
+            interior_shape = list(y.shape)
+            # ... then update current axis size
+            interior_shape[axis] = new_size
+
+            # ... and fill that axis with `value` as the default value
+            interior = np.full(interior_shape, value, dtype=y.dtype)
+
+            # Then copy over each old location into its new location
+            # we do that with kind of a selection mask
+            src_slices = [slice(None)] * y.ndim # will hold old indices
+            dst_slices = [slice(None)] * y.ndim # will hold new indices
+            # [slice(None)] is equivalent to [:] (select all)
+            # if we set slices[axis] to some integer within the size of that axis
+            # we select a particular position in that axis
+
+            for i in range(old_size):
+                src_slices[axis] = i # old position within old axis
+                dst_slices[axis] = i * (m + 1) # new position within new axis
+
+                # copy over
+                interior[tuple(dst_slices)] = y[tuple(src_slices)]
+
+            # finally set y to be the new interior (with padded axes upto and including the current axis)
+            y = interior
+
+    # apply outer padding
+    y = np.pad(y, pad_width, constant_values=value) # apply as specified
+        
+    return y
 
 eval_rules = {
     core.expand_dims: lambda x, axes: np.expand_dims(x, axes),
     core.moveaxis: np.moveaxis,
     core.reshape: lambda x, new_shape: np.reshape(x, new_shape),
+    core.pad: pad,
     core.neg: lambda x: -x,
     core.add: lambda x, y: x + y,
     core.reduce_sum: lambda x, axes: x.sum(axes),

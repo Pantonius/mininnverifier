@@ -104,7 +104,7 @@ expand_dims = Primitive("expand_dims", 1, ("axes",))
 moveaxis = Primitive("moveaxis", 1, ("source", "destination"))
 reshape = Primitive("reshape", 1, ("new_shape",))
 reduce_sum = ReduceSumPrimitive()
-
+pad = Primitive("pad", 1, ("config", "axes", "value"))
 
 def sub(x, y):
     return add(x, neg(y))
