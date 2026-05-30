@@ -62,6 +62,7 @@ class Primitive:
     keyword_args: tuple[str, ...] = ()
 
     def __call__(self, *values, **options):
+        # print(self, values)
         assert len(values) >= self.num_args, "Wrong number of arguments."
         options |= dict(zip(self.keyword_args, values[self.num_args :], strict=False))
         values = values[: self.num_args]
@@ -90,6 +91,10 @@ dot = Primitive("dot", 2)
 mul = Primitive("mul", 2)
 reciprocal = Primitive("reciprocal", 1)
 relu = Primitive("relu", 1)
+leaky_relu = Primitive("leaky_relu", 1, ("slope",))
+elu = Primitive("elu", 2)
+gelu = Primitive("gelu", 1)
+normalcdf = Primitive("normalcdf", 1)
 square = Primitive("square", 1)
 sqrt = Primitive("sqrt", 1)
 exp = Primitive("exp", 1)

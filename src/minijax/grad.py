@@ -5,6 +5,8 @@ from .compute_graph import make_graph
 from .eval import Array, zeros
 from .nested_containers import flatten, unflatten
 
+import numpy as np
+
 
 def grad(fn):
     v_and_g_fn = value_and_grad(fn)
@@ -112,6 +114,10 @@ vjp_rules = {
     core.mul: lambda t, _, x, y: (t * y, x * t),
     core.reciprocal: lambda t, _, x: -core.reciprocal(core.square(x)) * t,
     core.relu: lambda t, out, x: core.where(out, t, Array(0)),  # np.bool_(0) = False
+    core.leaky_relu: lambda t, _, x, *, slope: core.where(core.relu(x), t, t * Array(slope)),
+    core.elu: lambda t, _, x, a: core.where(x, t, t * Array(a) * core.exp(x)),
+    core.gelu: lambda t, _, x: t * core.normalcdf(x) + (core.exp(core.neg(core.square(x)) / Array(2)) * x) / (np.sqrt(Array(2 * np.pi))),
+    core.normalcdf: lambda t, _, x: (core.exp(core.neg(core.square(x)) / Array(2)) * x) / (core.sqrt(Array(2 * np.pi))),
     core.square: lambda t, _, x: t * Array(2) * x,
     core.sqrt: lambda t, _, x: t / (Array(2) * core.sqrt(x)),
     core.exp: lambda t, out, x: t * out,

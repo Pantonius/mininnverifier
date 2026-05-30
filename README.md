@@ -7,10 +7,18 @@ For neural network verification, it implements a basic variant of [alpha-beta-CR
 To get started, clone this repository, run
 
 ```
-pip install -e .[demos]
+uv sync
+uv pip install -e ".[demos]"
 ```
 
-and have fun with the code!
+and have fun with the examples in `examples`!
+
+## Tests
+To run the tests for the first milestone1 locally:
+
+```
+uv run python -m testrunner local "python -m cli" tests/milestone1
+```
 
 ## Acknowledgements
 
