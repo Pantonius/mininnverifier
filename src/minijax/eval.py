@@ -1,6 +1,7 @@
 # Copyright (c) 2025 by David Boetius
 # Licensed under the MIT Licensed.
 import numpy as np
+import scipy
 
 from . import core
 
@@ -64,6 +65,10 @@ eval_rules = {
     core.mul: lambda x, y: x * y,
     core.reciprocal: lambda x: 1 / x,
     core.relu: lambda x: np.maximum(x, 0.0),
+    core.leaky_relu: lambda x, slope: np.maximum(x, 0.0) + slope * np.minimum(x, 0.0), # adapted from https://docs.pytorch.org/docs/2.12/generated/torch.nn.modules.activation.LeakyReLU.html#leakyrelu
+    core.elu: lambda x, a: np.maximum(x, 0.0) + a * np.minimum(core.exp(x) - 1, 0.0), # adapted from https://docs.pytorch.org/docs/2.12/generated/torch.nn.modules.activation.ELU.html#elu
+    core.gelu: lambda x: x * core.normalcdf(x), # adapted from https://en.wikipedia.org/wiki/Rectified_linear_unit#Gaussian-error_linear_unit_(GELU)
+    core.normalcdf: scipy.stats.norm.cdf,
     core.square: np.square,
     core.sqrt: np.sqrt,
     core.exp: np.exp,
