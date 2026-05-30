@@ -63,7 +63,7 @@ class Primitive:
 
     def __call__(self, *values, **options):
         # print(self, values)
-        assert len(values) >= self.num_args, "Wrong number of arguments."
+        assert len(values) >= self.num_args, f"Wrong number of arguments for {self}"
         options |= dict(zip(self.keyword_args, values[self.num_args :], strict=False))
         values = values[: self.num_args]
         assert set(options.keys()) == set(self.keyword_args), "Wrong keyword arguments."
@@ -92,7 +92,7 @@ mul = Primitive("mul", 2)
 reciprocal = Primitive("reciprocal", 1)
 relu = Primitive("relu", 1)
 leaky_relu = Primitive("leaky_relu", 1, ("slope",))
-elu = Primitive("elu", 2)
+elu = Primitive("elu", 1)
 gelu = Primitive("gelu", 1)
 normalcdf = Primitive("normalcdf", 1)
 square = Primitive("square", 1)
