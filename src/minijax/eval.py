@@ -54,6 +54,9 @@ def np_dot(x, y):  # np.dot doesn't broadcast
     return np.einsum("...j,...jk", x, y)
 
 def pad(x, config: tuple[int, int, int], axes: tuple[int, ...], value: float):
+    if x.ndim == 0:
+        return x
+
     l, r, m = config
     actual_axes = tuple([axis if axis >= 0 else len(x.shape) + axis for axis in axes])
 

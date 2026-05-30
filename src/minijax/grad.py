@@ -110,7 +110,7 @@ def vjp_pad(tangent, _, x, config: tuple[int, int, int], axes: tuple[int, ...], 
     for axis in actual_axes:
         # strip left and right padding
         slices = [slice(None)] * g.ndim # once again take all axes
-        slices[axis] = slice(l, g.shape[axis] - r) # reduce current axis to just [l, -r]
+        slices[axis] = slice(l, int(g.shape[axis]) - r if r > 0 else None) # reduce current axis to just [l, -r]
         g = g[tuple(slices)] # apply that selection
 
         # and remove interior padding, if neccessary
