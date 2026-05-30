@@ -105,6 +105,7 @@ moveaxis = Primitive("moveaxis", 1, ("source", "destination"))
 reshape = Primitive("reshape", 1, ("new_shape",))
 reduce_sum = ReduceSumPrimitive()
 pad = Primitive("pad", 1, ("config", "axes", "value"))
+conv = Primitive("conv", 2, ("stride",))
 
 def sub(x, y):
     return add(x, neg(y))
