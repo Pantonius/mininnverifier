@@ -107,7 +107,7 @@ def pad(x, config: tuple[int, int, int], axes: tuple[int, ...], value: float):
         
     return y
 
-def conv(inp, kernel, stride):
+def conv(inp: tuple[float, float, float, float], kernel: tuple[float, float, float, float], stride: int):
     N, Cin, H, W = inp.shape
     Cout, _, kH, kW = kernel.shape
 
@@ -129,7 +129,7 @@ def conv(inp, kernel, stride):
 
     return y
 
-def avgpool(x, window_size, stride):
+def avgpool(x, window_size: tuple[int, ...], stride: tuple[int, ...]):
     new_shape = tuple([int(np.floor((x.shape[i] - window_size[i]) / stride[i])) + 1 for i in range(x.ndim)])
     y = np.zeros(new_shape, dtype=x.dtype)
 

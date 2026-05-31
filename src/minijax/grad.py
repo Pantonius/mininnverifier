@@ -118,10 +118,10 @@ def vjp_pad(tangent, _, x, config: tuple[int, int, int], axes: tuple[int, ...], 
             slices = [slice(None)] * g.ndim
             slices[axis] = slice(0, None, m + 1) # reduce current axis by only keeping each (m + 1)th position (starting at 0)
             g = g[tuple(slices)]
-
+    
     return Array(g)
 
-def vjp_conv(t, _, inp, kernel, stride):
+def vjp_conv(t, _, inp: tuple[float, float, float, float], kernel: tuple[float, float, float, float], stride: int):
     N, Cin, H, W = inp.shape
     Cout, _, kH, kW = kernel.shape
     _, _, Hp, Wp = t.shape
@@ -131,7 +131,6 @@ def vjp_conv(t, _, inp, kernel, stride):
 
     # wrt kernel: (rough sketch)
     # (x[n, c', stride * h + i, stride * w + j] * K[c, c', i, j])' = x[n, c', stride * h + i, stride * w + j] => t * (sum over these x) => sum over t * these x
-    print(t.array[0, :, 0, 0][:, np.newaxis, np.newaxis, np.newaxis])
     dk = np.zeros(kernel.shape)
     for n in range(N):
         for h in range(Hp):
@@ -150,7 +149,7 @@ def vjp_conv(t, _, inp, kernel, stride):
 
     return (Array(dx), Array(dk))
 
-def vjp_avgpool(t, _, x, window_size, stride):
+def vjp_avgpool(t, _, x, window_size: tuple[int, ...], stride: tuple[int, ...]):
     # once again a kind of sum of products
 
     # rough derivative
@@ -185,8 +184,8 @@ vjp_rules = {
     core.relu: lambda t, out, x: core.where(out, t, Array(0)),  # np.bool_(0) = False
     core.leaky_relu: lambda t, _, x, slope=.01: core.where(core.relu(x), t, t * Array(slope)), # TODO same as below
     core.elu: lambda t, _, x, a=0.1: core.where(x, t, t * Array(a) * core.exp(x)), # TODO this constant default value needs to be set somewhere else
-    core.gelu: lambda t, _, x: t * core.normalcdf(x) + (core.exp(core.neg(core.square(x)) / Array(2)) * x) / (core.sqrt(Array(2 * np.pi))),
-    core.normalcdf: lambda t, _, x: (core.exp(core.neg(core.square(x)) / Array(2)) * x) / (core.sqrt(Array(2 * np.pi))),
+    core.gelu: lambda t, _, x: t * core.normalcdf(x) + x * (core.exp(core.neg(core.square(x)) / Array(2)) / (core.sqrt(Array(2 * np.pi)))),
+    core.normalcdf: lambda t, _, x: t * (core.exp(core.neg(core.square(x)) / Array(2)) / (core.sqrt(Array(2 * np.pi)))),
     core.square: lambda t, _, x: t * Array(2) * x,
     core.sqrt: lambda t, _, x: t / (Array(2) * core.sqrt(x)),
     core.exp: lambda t, out, x: t * out,
