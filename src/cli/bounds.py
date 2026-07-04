@@ -103,17 +103,25 @@ def main():
     parser.add_argument("inputs", nargs="*", type=str)
     args = parser.parse_args()
 
+    # AP: graph is the compute graph representing the NN
     graph = load(args.network)
+    # AP: inputs is the array of inputs to the NN (only boxes and points are valid)
     inputs = _parse_inputs(args.inputs, graph.invars)
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
 
+    # AP: compute IBP (where the magic happens)
     out_bounds = ibp(lambda *xs: run_graph(graph, xs))(*inputs)
+
+    # AP: output each bounded output to a file
     for i, box in enumerate(out_bounds):
+        # AP: output path
         lb_path = args.output_dir / f"output_{i}_lb.bin"
         ub_path = args.output_dir / f"output_{i}_ub.bin"
+        # AP: output computed bounds
         box.lb.array.tofile(lb_path)
         box.ub.array.tofile(ub_path)
+        # AP: print the paths
         print(lb_path)
         print(ub_path)
 

@@ -19,7 +19,13 @@ def box_or_val(obj):
 
 
 def ibp(fn):
+    '''
+    Given a function (a NN) gives a interval bound prop algorithm
+    '''
     def ibp_fn(*args: Box | core.Value, **kwargs):
+        '''
+        Given some arguments (the inputs to the NN) wraps every node in the compute graph with the IBP interpretation
+        '''
         with core.new_interpreter(IBPInterpreter()) as interpreter:
             vals = map_structure(interpreter.wrap, args, is_leaf=box_or_val)
             out_bounds = fn(*vals, **kwargs)

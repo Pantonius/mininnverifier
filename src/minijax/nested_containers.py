@@ -82,6 +82,9 @@ def flat_expand_prefix(container, second, is_leaf=is_value):
 
 
 def map_structure(fn, container, *further_args, is_leaf=is_value):
+    '''
+    ???
+    '''
     further_flat = [flat_expand_prefix(container, arg) for arg in further_args]
     flat, structure = flatten(container, is_leaf)
     results = [fn(arg, *further) for arg, *further in zip(flat, *further_flat, strict=True)]
