@@ -153,14 +153,20 @@ def ibp_square(x):
     return y_lb, y_ub
 
 def ibp_reciprocal(x):
-    y_l, y_r = core.reciprocal(x.lb), core.reciprocal(x.ub)
-    # x.lb >= 0 => monotonic decreasing
-    # x.ub <= 0 => monotonic increasing
-    # x.lb < 0 < x.ub => lb = 0.0, ub = max(1 / x.lb, 1 / x.ub)
-    y_lb = where(x.lb >= 0.0, y_r, where(x.ub < 0.0, y_l, zeros(x.shape)))
-    # x.ub > -x.lb => x.ub + x.lb > 0
-    y_ub = where(x.lb >= 0.0, y_l, where(x.ub < 0.0, y_r, where(-x.lb >= x.ub, y_l, y_r)))
+    # AP: check for 0
+    straddles_zero = (x.lb <= 0.0) & (x.ub >= 0.0)
+
+    # AP: compute reciprocal normally
+    y_lb_safe = core.reciprocal(x.ub)  # decreasing fn: lb from the larger input
+    y_ub_safe = core.reciprocal(x.lb)  # decreasing fn: ub from the smaller input
+
+    inf = zeros(x.shape) + np.inf
+    # AP: set bounds for intervals including 0 to inf (essentially a "cannot verify anything")
+    y_lb = where(straddles_zero, -inf, y_lb_safe)
+    y_ub = where(straddles_zero, inf, y_ub_safe)
+
     return y_lb, y_ub
+
 
 def ibp_where(c, x, y):
     # lower to ndarray for np.where
@@ -215,7 +221,7 @@ mono_non_dec_primitives = {
     core.elu,
     core.exp,
     core.log,
-    core.sqrt,
+    core.sqrt, # TODO revisit: has issues with x <= 0, but I'm not sure what that should mean for the bound prop
     core.sumpool,
     core.avgpool,
 }
