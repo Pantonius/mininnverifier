@@ -40,10 +40,6 @@ class IBPValue(core.Value):
     def __init__(self, interpreter, lb, ub, is_point=False):
         super().__init__(interpreter, lb.shape)
 
-        # AP: small check to validate type
-        if(lb > ub):
-            raise ValueError(f"Lower-bound {lb} is larger than upper bound {ub}")
-
         self.lb = lb  # lower bound
         self.ub = ub  # upper bound
         self.is_point = is_point  # whether lb == ub
@@ -80,6 +76,8 @@ class IBPInterpreter(core.Interpreter[IBPValue]):
             out_lb, out_ub = ibp_linear(primitive, *values, **options)
         elif primitive is core.square:
             out_lb, out_ub = ibp_square(*values, **options)
+        elif primitive is core.reciprocal:
+            out_lb, out_ub = ibp_reciprocal(*values, **options)
         elif primitive is core.where:
             out_lb, out_ub = ibp_where(*values, **options)
         elif primitive is core.gelu:
@@ -104,7 +102,16 @@ def ibp_monotonic_non_increasing(fn, *args, **options):
 def ibp_linear(fn, x, y, **options):
     print(x, y)
 
-    if not x.is_point and not y.is_point:
+    if x.is_point:
+        x = x.lb
+        y_mid = (y.ub + y.lb) * 0.5
+        y_ran = (y.ub - y.lb) * 0.5
+        out_mid = fn(x, y_mid, **options)
+        out_ran = fn(abs(x), y_ran, **options)
+        return out_mid - out_ran, out_mid + out_ran
+    elif y.is_point:
+        return ibp_linear(lambda y, x: fn(x, y, **options), y, x)
+    elif fn is core.mul:
         # bilinear (as in Reading Assignment 03)
         ll = fn(x.lb, y.lb, **options)
         lu = fn(x.lb, y.ub, **options)
@@ -114,15 +121,8 @@ def ibp_linear(fn, x, y, **options):
         lb = min4(ll, lu, ul, uu)
         ub = max4(ll, lu, ul, uu)
         return lb, ub
-    elif x.is_point:
-        x = x.lb
-        y_mid = (y.ub + y.lb) * 0.5
-        y_ran = (y.ub - y.lb) * 0.5
-        out_mid = fn(x, y_mid, **options)
-        out_ran = fn(abs(x), y_ran, **options)
-        return out_mid - out_ran, out_mid + out_ran
-    elif y.is_point:
-        return ibp_linear(lambda y, x: fn(x, y, **options), y, x)
+    else:
+        raise NotImplementedError(f"No bilinear IBP rule for fn {fn}")
 
 def min4(a, b, c, d):
     return where(a <= b,
@@ -150,6 +150,16 @@ def ibp_square(x):
     y_lb = where(x.lb >= 0.0, y_l, where(x.ub < 0.0, y_r, zeros(x.shape)))
     # x.ub > -x.lb => x.ub + x.lb > 0
     y_ub = where(x.lb >= 0.0, y_r, where(x.ub < 0.0, y_l, where(-x.lb >= x.ub, y_l, y_r)))
+    return y_lb, y_ub
+
+def ibp_reciprocal(x):
+    y_l, y_r = core.reciprocal(x.lb), core.reciprocal(x.ub)
+    # x.lb >= 0 => monotonic decreasing
+    # x.ub <= 0 => monotonic increasing
+    # x.lb < 0 < x.ub => lb = 0.0, ub = max(1 / x.lb, 1 / x.ub)
+    y_lb = where(x.lb >= 0.0, y_r, where(x.ub < 0.0, y_l, zeros(x.shape)))
+    # x.ub > -x.lb => x.ub + x.lb > 0
+    y_ub = where(x.lb >= 0.0, y_l, where(x.ub < 0.0, y_r, where(-x.lb >= x.ub, y_l, y_r)))
     return y_lb, y_ub
 
 def ibp_where(c, x, y):
@@ -208,9 +218,8 @@ mono_non_dec_primitives = {
     core.sqrt,
     core.sumpool,
     core.avgpool,
-    core.normalcdf,
 }
-mono_non_inc_primitives = {core.neg, core.reciprocal}
+mono_non_inc_primitives = {core.neg}
 linear_primitives = {
     core.dot,
     core.mul,
