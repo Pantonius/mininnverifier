@@ -100,8 +100,6 @@ def ibp_monotonic_non_increasing(fn, *args, **options):
 
 
 def ibp_linear(fn, x, y, **options):
-    print(x, y)
-
     if x.is_point:
         x = x.lb
         y_mid = (y.ub + y.lb) * 0.5
@@ -111,7 +109,7 @@ def ibp_linear(fn, x, y, **options):
         return out_mid - out_ran, out_mid + out_ran
     elif y.is_point:
         return ibp_linear(lambda y, x: fn(x, y, **options), y, x)
-    elif fn is core.mul:
+    else:
         # bilinear (as in Reading Assignment 03)
         ll = fn(x.lb, y.lb, **options)
         lu = fn(x.lb, y.ub, **options)
@@ -121,8 +119,6 @@ def ibp_linear(fn, x, y, **options):
         lb = min4(ll, lu, ul, uu)
         ub = max4(ll, lu, ul, uu)
         return lb, ub
-    else:
-        raise NotImplementedError(f"No bilinear IBP rule for fn {fn}")
 
 def min4(a, b, c, d):
     return where(a <= b,
@@ -224,6 +220,7 @@ mono_non_dec_primitives = {
     core.sqrt, # TODO revisit: has issues with x <= 0, but I'm not sure what that should mean for the bound prop
     core.sumpool,
     core.avgpool,
+    core.normalcdf,
 }
 mono_non_inc_primitives = {core.neg}
 linear_primitives = {
