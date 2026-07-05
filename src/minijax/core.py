@@ -163,6 +163,7 @@ reduce_sum = ReduceSumPrimitive()
 pad = Primitive("pad", 1, ("config", "axes", "value"))
 conv = Primitive("conv", 2, ("stride",))
 avgpool = Primitive("avgpool", 1, ("window_size", "stride"))
+sumpool = Primitive("sumpool", 1, ("window_size", "stride"))
 
 greater_equal = Primitive("greater_equal", 2)
 less_equal = Primitive("less_equal", 2)

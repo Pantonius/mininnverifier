@@ -158,6 +158,26 @@ def vjp_avgpool(t, _, x, window_size: tuple[int, ...], stride: tuple[int, ...]):
 
     return Array(dx)
 
+def vjp_sumpool(t, _, x, window_size: tuple[int, ...], stride: tuple[int, ...]):
+    # kind of sum of sums
+
+    # rough derivative
+    # y[out_idx] = sum(patch)
+    # d(y[out_idx])/dx = 1
+
+    dx = np.zeros(x.shape)
+    new_shape = t.shape
+
+    # for each position in the output
+    for out_idx in np.ndindex(new_shape):
+        # get the original slice of the input space
+        slices = tuple(slice(out_idx[axis] * stride[axis], out_idx[axis] * stride[axis] + window_size[axis]) for axis in range(x.ndim))
+
+        # add t * its derivative (i.e. 1))
+        dx[slices] += t.array[out_idx]
+
+    return Array(dx)
+
 def vjp_concat_two(t, _, x, __, axis):
     return (core.head(t, axis, x.shape[axis]), core.tail(t, axis, x.shape[axis]))
 
@@ -197,6 +217,7 @@ vjp_rules = {
     core.where: vjp_where,
     core.conv: vjp_conv,
     core.avgpool: vjp_avgpool,
+    core.sumpool: vjp_sumpool,
     core.greater_equal: lambda t, *_: (zeros(t.shape), zeros(t.shape)),
     core.less_equal: lambda t, *_: (zeros(t.shape), zeros(t.shape)),
     core.elementwise_not: lambda t, *_: zeros(t.shape),

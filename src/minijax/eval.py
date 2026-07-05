@@ -148,6 +148,21 @@ def avgpool(x, window_size: tuple[int, ...], stride: tuple[int, ...]):
     
     return y
 
+def sumpool(x, window_size: tuple[int, ...], stride: tuple[int, ...]):
+    new_shape = tuple([int(np.floor((x.shape[i] - window_size[i]) / stride[i])) + 1 for i in range(x.ndim)])
+    y = np.zeros(new_shape, dtype=x.dtype)
+
+    # iterate over all positions in the new_shape
+    for out_idx in np.ndindex(new_shape):
+        # get the slice in the input:
+        # for each axis get the interval in the input: [output position * stride, output position * stride + window size]
+        slices = tuple(slice(out_idx[axis] * stride[axis], out_idx[axis] * stride[axis] + window_size[axis]) for axis in range (y.ndim))
+
+        # compute the mean of that slice and put it into the output
+        y[out_idx] = x[slices].sum()
+    
+    return y
+
 eval_rules = {
     core.expand_dims: lambda x, axes: np.expand_dims(x, axes),
     core.moveaxis: np.moveaxis,
@@ -171,6 +186,7 @@ eval_rules = {
     core.where: np.where,
     core.conv: conv,
     core.avgpool: avgpool,
+    core.sumpool: sumpool,
     core.greater_equal: np.greater_equal,
     core.less_equal: np.less_equal,
     core.elementwise_not: np.bitwise_not,
